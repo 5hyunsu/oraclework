@@ -36,6 +36,7 @@ DROP user user5;
 
 /* 테이블 스페이스 : 유저에게 어느 정도의 테이블을 할 당 해 줄 것인지 넣어주게 되어 있다.
 어느정도의 범위를 줄 것인가  1번 (1번이 2번보다 더 많이 쓰인다)
+제한없이(UNLIMITED)
 */
 ALTER USER aie DEFAULT TABLESPACE users quota UNLIMITED on users;
 
