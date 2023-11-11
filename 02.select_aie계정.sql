@@ -315,7 +315,7 @@ WHERE EMAIL LIKE '____%';  -- 언더바가 4개 이렇게 하면 원하는 결�
 SELECT EMP_ID, EMP_NAME, EMAIL 
 FROM EMPLOYEE
 WHERE EMAIL LIKE '___$_%' ESCAPE '$';
--- WHERE EMAIL LIKE '___#_%' ESCAPE '#'; 
+-- WHERE EMAIL LIKE '___#_%' ESCAPE '#'; -- 뒤에 나오는 것은 문자로 
 
 --이메일 중  _앞에 글자가 3글자인 사원들을 제외한 사번, 사원명, 이메일 조회 
 SELECT EMP_ID, EMP_NAME, EMAIL 
@@ -475,7 +475,7 @@ WHERE BONUS IS NOT NULL AND EMP_NAME LIKE'%하%';
  SELECT 컬럼, 컬럼, ....
  FROM 테이블명
  WHERE 조건식
- ORDER BY 정렬 기준이 되는 컬럼명 | 별칭 | 컬럼순번[ASC|DESC]|[NULLS FIRST |NULLS LAST]
+ (중요)ORDER BY 정렬 기준이 되는 컬럼명 | 별칭 | 컬럼순번[ASC|DESC]|[NULLS FIRST |NULLS LAST]
  
  *ASC : 오름차순 정렬
  *DESC : 내림차순 정렬 
@@ -492,9 +492,9 @@ SELECT EMP_NAME,BONUS, SALARY
 FROM EMPLOYEE
 --ORDER BY BONUS;  --오름차순 기본값 NULL이 맨 끝에 온다. 
 --ORDER BY BONUS ASC; 
---ORDER BY BONUS NULLS FIRST;
+--ORDER BY BONUS NULLS FIRST;  -NULL 마지막에  나머지 오름차순 
 --ORDER BY BONUS DESC;  --내림차순은 반드시 DESC기술, NULL이 맨 앞에 온다. 
-ORDER BY BONUS DESC, SALARY ASC;
+ORDER BY BONUS DESC, SALARY ASC; --보너스는 내림, 급여 오름 --기준 여러개 가능 
 
 --전 사원의 사원명, 연봉조회(연봉의 내림차순 정렬 조회) 
 
