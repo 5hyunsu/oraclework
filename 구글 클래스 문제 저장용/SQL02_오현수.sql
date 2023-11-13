@@ -113,5 +113,3 @@ WHERE STUDENT_NO='A112113';
 
 
 
-
-

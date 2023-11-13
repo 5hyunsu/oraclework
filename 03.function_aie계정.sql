@@ -21,8 +21,9 @@
     LENGTH(컬럼|'문자열'): 해당 문자열의 글자수 반환 
     LENGTHB(컬럼|'문자열'): 해당 문자열의 BYTE수 반환
     - 한글 : XE버전일 때 => 1글자당 3BYTE(김, ㄱㄷㅏ 등도 다 1글자)
-    - 한글 : EE버전일 때 => 1글자당 2BYTE
+    - 한글 : EE버전일 때 => 1글자당 2BYTE  EE버전은 유료버전 
     - 그외 : 1글자당 1byte 
+    -
     
     & - 얘는 특수함 
     
@@ -46,7 +47,9 @@ FROM EMPLOYEE;
 /*
     INSTR: 문자열로부터 특정 문자의 시작위치 (INDEX)를 찾아서 반환(반환형:NUMBER)
     (중요- 오라클에서 index 번호는 1부터 시작, 찾는 문자가 없으면 0반환
+    프로그래밍과 다르다, 자바는 0부터 인덱스 시작 
     (중요) INSTR(컬럼|'문자열','찾을 문자열',[찾을 위치의 시작 값,[순번])
+    - 순번: 앞에서부터는 1, 뒤에서 부터는 -1이라고 
     
     찾을위치의 시작 값 [순번]에 들어갈 값, EX) 순번은 몇번째 A를 3번째 찾기
     1: 앞에서 부터 찾기(기본값)
@@ -83,10 +86,12 @@ SELECT SUBSTR('ORACLEHTMLCSS',7) FROM DUAL; --결과 : HTMLCSS
 SELECT SUBSTR('ORACLEHTMLCSS',7,4) FROM DUAL; --결과 : HTML
 SELECT SUBSTR('ORACLEHTMLCSS',1,6) FROM DUAL; --결과 : ORACLE
 SELECT SUBSTR('ORACLEHTMLCSS',-7,4) FROM DUAL; --결과 : HTML
+-- -7이면 뒤에서부터 7번째 6,5,4번째 추출 
 --(INDEX가 음수이면 뒤에서부터 INDEX번호를 쓴다 
 
 --주민번호에서 성별만 추출하여 사원명,주민번호, 성별을 조회 
 SELECT EMP_NAME, EMP_NO,SUBSTR(EMP_NO,8,1) "성별" 
+--인덱스 번호 8번째
 FROM EMPLOYEE;
 
 --여자사원들만 사번, 사원명, 성별을 조회 
@@ -94,13 +99,17 @@ SELECT EMP_ID, EMP_NAME, SUBSTR(EMP_NO,8,1) 성별
 FROM EMPLOYEE
 WHERE SUBSTR(EMP_NO,8,1)='2' OR SUBSTR(EMP_NO,8,1)='4';
 
+
 --남자사원들만 사번, 사원명, 성별을 조회 
 SELECT EMP_ID, EMP_NAME, SUBSTR(EMP_NO,8,1) 성별
 FROM EMPLOYEE
 WHERE SUBSTR(EMP_NO,8,1) IN(1,3);
+--목록으로 표현  이 목록중 하나이면 IN이 더 짧기 때문에 보통IN을 사용
 
 --사원명, 이메일, 아이디(@표시 앞까지만) 조회 
 SELECT EMP_NAME, EMAIL, SUBSTR(EMAIL, 1,INSTR(EMAIL,'@',1,1)-1)
+--인덱스번호 1부터 앳 제외하고 그 앞에 까지니까 -1을 해준다.
+--@의 인댁스 번호를 ABC@ 니까 4-1=3으로 표현한다ㅏ. 
 FROM EMPLOYEE;
 
 ---------------------------------------------------------
@@ -111,30 +120,32 @@ FROM EMPLOYEE;
  LPAD/RPAD('문자열', 최종적으로 반환할 문자의 길이,[덧붙이고자하는문자])
  문자열에 덧붙이고자 하는 문자를 왼쪽 혹은 오른쪽에 덧붙여서 최종길이만큼
  문자열 반환 
-
+ 문자 딱 맞춰서 출력 하고 싶을 때 사용한다. 덧붙이고자 안넣으면 공백으로 표현
 */
 
 --20길이 만큼 EMAIL을 출력하고자 할 때 오른쪽 정렬로 출력(왼쪽으로 공백으로채워서출력)
-SELECT EMP_NAME, LPAD(EMAIL,20)
+SELECT EMP_NAME, LPAD(EMAIL,20)  -- 공백10개 이메일 10개 이런식으로 표현한다
 FROM EMPLOYEE;
 
-SELECT EMP_NAME, LPAD(EMAIL,20,'#')
+SELECT EMP_NAME, LPAD(EMAIL,20,'#')  -- 샾으로 공백을 대체한다. 
 FROM EMPLOYEE;
 
-SELECT EMP_NAME, RPAD(EMAIL,20,'*')
+SELECT EMP_NAME, RPAD(EMAIL,20,'*')  
 FROM EMPLOYEE;
 
 --사번, 사원명, 주민번호 출력(123456-7******)
 SELECT EMP_ID, EMP_NAME, RPAD(SUBSTR(EMP_NO,1,8),14,'*')
+--SUBSTR로 8개 갖고오기, 7까지 추출, 즉,14개 중에서 앞에 8개는 추출해서 가져오고, 나머지는 별표시
 FROM EMPLOYEE;
 ---------------------------------------------------------
 SELECT EMP_ID, EMP_NAME, SUBSTR(emp_no,1,8)|| '*******'
+--더 간단하게 8자리 갖고와서 나머지는 별 찍기 
 FROM EMPLOYEE;
 
 ------------------------------------------------------------
 /*
   LTRIM / RTRIM 문자열에서 특정 문자를 제거한 나머지 문자  반환(CHARCTER:반환형)
-   TRIM 문자열의 앞/뒤 양쪽에 있는 지정한 문자를 제거한 나머지 문자 반환 
+  TRIM 문자열의 앞/뒤 양쪽에 있는 지정한 문자를 제거한 나머지 문자 반환 
    
    [표현법]
    LTRIM / RTRIM '문자열', [제시하고자 하는 문자열])
@@ -143,13 +154,19 @@ FROM EMPLOYEE;
 
 */
 SELECT LTRIM(   'Ri' || '애드인에듀') from dual; -- 제거하고자 하는 문자열 
-SELECT LTRIM('JAVAJAVASCRIPTSPRING','JAVA'  )FROM DUAL;
+--왼쪽 공백만 제거 
+SELECT LTRIM('JAVAJAVASCRIPTJAVASPRING','JAVA'  )FROM DUAL;
+--왼쪽 자바만 제거, 가은데 낀 자바는 제거하지 못한다. 
 SELECT LTRIM(  'Ri'  || '애드인에듀' ) FROM DUAL;
-SELECT RTRIM('738319')FROM DUAL;
+SELECT LTRIM('738319ASDASDASD','0123456789')FROM DUAL;
+--왼쪽 숫자 제거하기 , 뒤에 0123456789입력
 
 --TRIM은 기본적으로 양쪽 모두 문자를(기본값: 공백) 제거 
 SELECT TRIM('  A  E  ') || '애드인에듀' FROM DUAL; --TRIM 양쪽모두 공뱆ㄱ제거
+--앞뒤 공백제거만 한다. 
 SELECT TRIM('A' FROM 'AAAABDKD342AAAA') FROM DUAL;
+--LTRIM, RTRIM과 다르게 제거하고자 하는 문자열이 앞으로 나온다.
+
 
 --LEADING: 앞의 문자 제거 
 SELECT TRIM(LEADING 'A' FROM 'AAAAKDJDIAAA') FROM DUAL;
@@ -179,7 +196,7 @@ SELECT CONCAT('ORACLE','(오라클)')FROM DUAL;
 SELECT 'ORACLE'||'(오라클)'FROM DUAL;   --위 아래가 같다 
 --인수의 개수가 부적합(2개만 가능)
 SELECT CONCAT('ORACLE','(오라클)','02-313-0470')FROM DUAL; 
--- 3개이상도 가능 
+-- 3개이상도 가능, OR을 사용하면 더 편하다. 
 SELECT 'ORACLE'||'(오라클)'||'02-313-0470' FROM DUAL; 
 
 ---------------------------------------------------------------
@@ -212,7 +229,7 @@ SELECT ABS(-3.1415) FROM DUAL;
   MOD(NUMBER, NUMBER)주민번호 앞자리와 뒷자리의 합 조회
 */
 SELECT MOD(10,3) FROM DUAL;
-SELECT MOD(10.9 , 2) FROM DUAL; --추천하지 않는 방법 , 비추천
+SELECT MOD(10.9 , 2) FROM DUAL; --(중요) 추천하지 않는 방법 , 비추천
 
 ----------------------------------------------------------
 /*
@@ -221,16 +238,16 @@ SELECT MOD(10.9 , 2) FROM DUAL; --추천하지 않는 방법 , 비추천
   ROUND(NUMBER,[위치]) 
 
 */
-SELECT ROUND(1234.56)FROM DUAL; -- 위치생략시 0 
+SELECT ROUND(1234.56)FROM DUAL; -- 위치생략시 0 / 정수로 반올림해서 1235 출력 
 SELECT ROUND(12.34)FROM DUAL;
-SELECT ROUND(1234.5678,2)FROM DUAL; -- 소숫점 둘째자기까지 표시
+SELECT ROUND(1234.5678,2)FROM DUAL; -- 소숫점 둘째자리까지 표시 1234.57로 표현
 SELECT ROUND(1234.56,4) FROM DUAL;  -- 숫자 자체가 둘째자리 까지만 있어서 소용 없다. 
 SELECT ROUND(1234.56,-2) FROM DUAL;  --1200으로  -2 십의 자리에서 반올림 
 
 ----------------------------------------------------------
 /*
     CEIL : 올림한 결과 반환
-             주의 - 마이너스일때 조심 
+             !!!!주의 - 마이너스일때 조심!!! 
     
     [표현법]
     CEIL(NUMBER)
@@ -273,16 +290,20 @@ SELECT SYSDATE FROM DUAL;
 ----------------------------------------------------------
 /*
     MONTHS_BETWEEN(DATE1, DATE2) 두 날짜 사이에 개월수 반환 
-    
+    찾아서 쓸 수 있을 정도..
 */
 
 --소수점 이하 자리 까지 나온다. ceil 붙여서 근무일수로 바꾼다. 
 SELECT EMP_NAME , HIRE_DATE, CEIl(SYSDATE-HIRE_DATE) "근무일수"
 FROM EMPLOYEE;
+-- 넣을 때는 시분초가 다 0으로 들어가는데 오늘 시간이 초까지 들어가므로 계산결과가 소숫점으로 표시된다
+-- 따라서 CEIL로 올림을 한다. 
 
 --소수점 이하 자리 까지 나온다. ceil 붙여서 근무개월수로 바꾼다.
 SELECT EMP_NAME , HIRE_DATE, CEIL(MONTHS_BETWEEN(SYSDATE,HIRE_DATE)) || '개월차' "근무개월수"
 FROM EMPLOYEE;
+--함수 매개변수는 컴마 
+
 --CONCAT으로 연결하기 
 SELECT EMP_NAME , HIRE_DATE, CONCAT(CEIL(MONTHS_BETWEEN(SYSDATE,HIRE_DATE)) , '개월차') "근무개월수"
 FROM EMPLOYEE;
@@ -292,7 +313,8 @@ FROM EMPLOYEE;
     ADD_MONTHS(DATE, NUMBER) : 특정날짜에 해당 숫자만큼의 개월수를 더해 그 날짜를 반환 
 */
 
-SELECT ADD_MONTH(SYSDATE,1)FROM DUAL;
+SELECT ADD_MONTH(SYSDATE,1)FROM DUAL; 
+--오늘 날짜에 1개월 후 
 
 --사원명, 입사일, 입사후 정직원이 된 날짜(6개월 후) 조회
 SELECT EMP_NAME, HIRE_DATE, ADD_MONTHS(HIRE_DATE ,6) "정직원이된 날짜"
@@ -303,6 +325,7 @@ FROM EMPLOYEE;
     
 */
 SELECT SYSDATE, NEXT_DAY(SYSDATE, '월요일') FROM DUAL;
+--오늘을 기준으로 다음주 월요일이니까 11.20
 SELECT SYSDATE, NEXT_DAY(SYSDATE, '월') FROM DUAL; --결과 값은 동일
 
 --1부터 : 일요일,월,화
@@ -327,7 +350,8 @@ SELECT EMP_NAME, HIRE_DATE, LAST_DAY(HIRE_DATE),LAST_DAY(HIRE_DATE)-HIRE_DATE+1
 FROM EMPLOYEE;
 ----------------------------------------------------------
 /*
-    EXTRACT : 특정 날짜로부터 년,월, 일 값을 추출하여 반환하는 함수(NUMBER:반환형)
+    EXTRACT : 특정 날짜로부터 년,월, 일 값을 추출하여 반환하는 함수
+    (NUMBER:반환형)
 
     [표현법]
     EXTRACT(YEAR FROM DATE); 년도만 추출 
@@ -343,7 +367,7 @@ SELECT EMP_NAME,
 FROM EMPLOYEE
 ORDER BY 입사년도, 입사월, 입사일;
 --=========================================================
------------------------형 변환 함수 -----------------------
+----★★★★★----형 변환 함수 ----------------------
 --=========================================================
 ----------------------------------------------------------
 /*
@@ -372,40 +396,58 @@ SELECT TO_CHAR(1234,'999999')자리 FROM DUAL;
 --(9가6개)6자리를 차지하고 앞에 2자리가 없으니 앞에 2자리가 공백임 
 
 SELECT TO_CHAR(1234,'000000')자리 FROM DUAL; 
---6자리 공간 차지, 왼쪽 정렬, 빈칸읜 0으로 
+--6자리 공간 차지, 왼쪽 정렬, 앞에 2자리 빈칸을 0으로 
 
-SELECT TO_CHAR(1234,'L9999999')자리 FROM DUAL;--L은 로컬, 설정된 나라의 화폐단위 
+SELECT TO_CHAR(1234,'L9999999')자리 FROM DUAL;
+--L은 로컬, 설정된 나라의 화폐단위, 왼쪽보다 큰 단위를 오른쪽에 넣어준다.
 SELECT TO_CHAR(1234,'$99999')자리 FROM DUAL;--$는 문자의 의미 
 
 SELECT TO_CHAR(123456789,'$999,999,999')자리 FROM DUAL;
 --자릿수 맞춰서 콤마 찍어줘야 한다. 
 SELECT TO_CHAR(123456789,'L999,999,999,999')자리 FROM DUAL;
+
+--★★★★★★★★★★★★★★★★★★★★★★★★★★
 -- 사번, 이름, 급여(\11,111,111), 연봉(|123.232.232)조회
+--연봉 급여 중요함. 표시하는것 중요 
 SELECT EMP_ID, EMP_NAME, 
      TO_CHAR(SALARY,'L999,999,999,999')급여,
      TO_CHAR(SALARY*12, 'L999,999,999,999') 연봉
 FROM EMPLOYEE;
 
 --FM
-SELECT TO_CHAR(123.456, 'FM99990.999'), --자리차지하지 않고 나옴 
+SELECT TO_CHAR(123.456, 'FM99990.99999'), 
+    --자리차지하지 않고 나옴, 끝에 0이면 값이 없어도 출력하시오, 
+    --9는 있으면 출력 없으면 출력 ㄴㄴ 
        TO_CHAR(1234.56, 'FM9990.99'),
-       TO_CHAR(0.1000, 'FM9990.999'), --한자리는 무조건 나와야 된다.
-       TO_CHAR(0.1000, 'FM9990.000'), -- 없어도 소수점 이하 3자리 나와야 한다.
+       TO_CHAR(0.1000, 'FM9990.999'), 
+    --한자리는 무조건 나와야 된다.
+    --뒤에 세자리는 없으면 출력하지 마시오 
+    --0.1만 나옴, 
+       TO_CHAR(0.1000, 'FM9990.00'), 
+    -- 없어도 소수점 이하 2자리 나와야 한다.
+    -- 소수점 2자리 까지는 나와야 한다. 
        TO_CHAR(0.1000, 'FM9999.999') --9는 0이 안나옴 안채워줌 
     FROM DUAL;
     
 --FM 안 붙은 것 : 자리차리 하냐 안하냐 차이,  0을 넣으면 0으로 채워지냐 없으면 안나옴 
-SELECT TO_CHAR(123.456, '99990.999'), --자리차지하지 않고 나옴 
-       TO_CHAR(1234.56, '9990.99'),
+SELECT TO_CHAR(123.456, '99990.999'), 
+       --자리차지하지 않고 나옴 , 2자리만큼 공백 만들고 나옴 
+       TO_CHAR(1234.56, '9990.99'), --보통 사용하는 형식 (소숫점 몇째 자리, 일의 자리 0)
+       TO_CHAR(1234.56, '9990.00'), -- 보통형식
        TO_CHAR(0.1000, '9990.999'), --세자리 자리차지.
        TO_CHAR(0.1, '9990.000'), -- 없어도 소수점 이하 3자리 나와야 한다.
        TO_CHAR(0.1000, '9999.999') --9는 0이 안나옴 안채워줌 
+       
+       --소수점 이하는 자리차리는 한다. 
+       --0.100과 같이 소수점이하 자리 까지 나온다.
     FROM DUAL;
 
 ----------------------------문자 =>숫자-----------------------------
 --시간 
 SELECT TO_CHAR(SYSDATE, 'AM HH:MI;SS') FROM DUAL;
 SELECT TO_CHAR(SYSDATE, 'AM HH:MI;SS')  FROM DUAL;
+
+--HH24 24시간제 ㅍ시 
 
 --날짜
 ALTER SESESSION SEL NLS_LANGUAGE = KOREAN;
@@ -417,7 +459,10 @@ SELECT TO CHAR(SYSDATE, 'YYYY-MM-DD') FROM DUAL;
 SELECT EMP_NAME, TO_CHAR(HIRE_DATE, 'YY-MM-DD') 입사일, TO_CHAR(HIRE_DATE, 'DL')입사년월일요일
 FROM EMPLOYEE; 
 
-SELECT EMP_NAME, TO_CHAR(HIRE_DATE, 'YY-MM-DD') 입사일, TO_CHAR(HIRE_DATE, 'YYYY"년 "MM"월 "DD"일"DAY')입사년월일요일
+SELECT EMP_NAME, TO_CHAR(HIRE_DATE, 'YY-MM-DD') 입사일, 
+       TO_CHAR(HIRE_DATE, 'YYYY"년 "MM"월 "DD"일"DAY')입사년월일요일
+       --그냥 따옴표 YYYY, 쌍따옴표 년,월,일 표시 
+
 FROM EMPLOYEE; 
 
 --년도
@@ -435,8 +480,8 @@ SELECT TO_CHAR(SYSDATE,'YYYY'),
 
 SELECT TO_CHAR(HIRE_DATE,'YYYY')
       ,TO_CHAR(HIRE_DATE, 'RRRR')
-      ,TO_CHAR(HIRE_DATE, 'RR')
-      ,TO_CHAR(HIRE_DATE, 'CC')
+      ,TO_CHAR(HIRE_DATE, 'RR') --뒤에 자르고 표시 
+      ,TO_CHAR(HIRE_DATE, 'CC') --세기 표시 20세기 21세기
 FROM EMPLOYEE;
 --입력데이터가 그대로라 RRRR 해도 그대로 나온다 
 
@@ -482,9 +527,14 @@ SELECT TO_CHAR(TO_DATE('070407 020830', 'YYMMDDHHMISS')) FROM DUAL; --년월일�
 
 SELECT TO_DATE('041110','YYMMDD'),  TO_DATE('041110','RRMMDD')FROM DUAL;
 
-SELECT TO_DATE('20041110','YYYYMMDD'),  TO_DATE('041110','YYMMDD')FROM DUAL;
+
+
+SELECT TO_DATE('20041110','YYYYMMDD'),  TO_DATE('981110','YYMMDD')FROM DUAL;
 --YY는 앞에 무조건 '20'이 붙는다. 
-SELECT TO_DATE('20041110','RRRRMMDD'),  TO_DATE('041110','RRMMDD')FROM DUAL;
+SELECT TO_DATE('20041110','RRRRMMDD'),  TO_DATE('981110','RRMMDD')FROM DUAL;
+--RR이 기본 값으로 표현된다.  위에와 차이 점이 있다. 
+
+
 
 SELECT TO_DATE('981110','RRMMDD'), 
       TO_DATE('981110','YYMMDD')FROM DUAL;
@@ -514,10 +564,11 @@ SELECT TO_NUMBER('1,000','9,999,999') + TO_NUMBER('1,000,000','9,999,999')FROM D
 --=========================================================
 
 /*
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
  NVL(컬럼, 해당컬럼이 NULL일 경우 반환될 값) 
 */
 
-SELECT EMP_NAME, NVL(BONUS, 0)
+SELECT EMP_NAME, NVL(BONUS, 0) --보통 숫자는 0으로 대체 
 FROM EMPLOYEE; 
 
 --사원명, 보너스포함한 연봉 조회
