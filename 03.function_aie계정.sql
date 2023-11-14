@@ -690,7 +690,7 @@ FROM EMPLOYEE;
 
 --남자 사원의 총 급여액 조회 
 SELECT SUM(SALARY) AS "남자사원의 총급여액"
-FROM EMPLOYEE;
+FROM EMPLOYEE
 WHERE SUBSTR(EMP_NO,8,1)IN ('1','3');
 
 --부서코드가 'D5'인 사원의 총 급여액 조회 

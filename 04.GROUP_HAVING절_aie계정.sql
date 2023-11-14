@@ -14,12 +14,13 @@ FROM EMPLOYEE;  --전체 사원을 하나의 그룹을 묶어서 총합을 구�
 SELECT DEPT_CODE, SUM(SALARY) 
 FROM EMPLOYEE
 GROUP BY DEPT_CODE; --그룹별로 합계가 나옴// 보통 그룹바이 한 것을 셀렉트에 넣는다. 
-
+--WHERE BY은 해당하는 것만 나오고 
+--GROUP BY는 그룹별로 합계가 나온다
 
 -- 각 부서별 사원수 조회 
 SELECT DEPT_CODE , COUNT(*) AS "사원수"
 FROM EMPLOYEE
-GROUP BY DEPT_CODE;
+GROUP BY DEPT_CODE; 
 
 --각 부서별 급여합계와 사원수 조회 
 SELECT DEPT_CODE, SUM(SALARY), COUNT(*)
@@ -181,13 +182,14 @@ SELECT DEPT_CODE, JOB_CODE, SUM(SALARY)
 FROM EMPLOYEE
 GROUP BY DEPT_CODE, JOB_CODE
 ORDER BY 1;
---ROLLUP: 중간집계를 다시 해준다.
+--ROLLUP: 중간집계를 다시 해준다. 
+---DEPT_CODE 정렬하고 D1마지막에 합 추가, 두번째 그룹의 합 추가, 전체 합 추가 
 SELECT DEPT_CODE, JOB_CODE, SUM(SALARY)
 FROM EMPLOYEE
 GROUP BY ROLLUP(DEPT_CODE, JOB_CODE) --2번의 그룹화 
 ORDER BY 1;
 --CUBE :  첫번째 중간집계 
-SELECT DEPT_CODE, JOB_CODE, SUM(SALARY)
+SELECT DEPT_CODE, JOB_CODE, SUM(SALARY) -- 두버째 그룹 모두 합정리
 FROM EMPLOYEE
 GROUP BY CUBE(DEPT_CODE, JOB_CODE) --2번의 그룹화 
 ORDER BY 1;
