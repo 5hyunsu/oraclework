@@ -588,8 +588,8 @@ FROM EMPLOYEE;
   - 컬럼값이 존재할 경우 반환값 1
   - 컬럼값이 NULL일때 반환값 2 
 */
-
-SELECT EMP_NAME, SALARY, BONUS, SALARY*NVL2(BONUS, 0.5, 0.1)
+--보너스를 받는 사람은 50%의 성과급을, 보너스를 받지 않는 사람은 10%의 성과급을 준다.
+SELECT EMP_NAME, SALARY, BONUS, SALARY*NVL2(BONUS, 0.5, 0.1) AS 성과급
 FROM EMPLOYEE;
 
 SELECT EMP_NAME, SALARY, NVL2(DEPT_CODE, '부서있음', '부서없음') AS 부서유무
@@ -609,8 +609,11 @@ SELECT NULLIF('1234','5678')FROM DUAL;
 --=========================================================
 -----------------------<선택 함수>-----------------------
 --=========================================================
-/*
-    DECODE(비교하고자 하는 대상(컬럼|산술연산|함수식), 비교값1,결과값1, 비교값2, 결과값2
+/*   
+
+    DECODE(비교하고자 하는 대상(컬럼|산술연산|함수식), 
+           비교값1,결과값1, 비교값2, 결과값2...)
+        
     
     SWITCH(비교대상){
         CASE 비교값1:
@@ -639,6 +642,7 @@ SELECT EMP_NAME, JOB_CODE, SALARY 기존급여 --여기서 인상된 급여 안�
                       'J6', SALARY*1.15,
                       'J7', SALARY*1.1,
                             SALARY*1.05) AS 인상된급여
+                            --1.05는 마지막에 디폴트 값으로 보여준다.
 FROM EMPLOYEE;
 
 --SWITCH(JOB_CODE){
@@ -647,20 +651,153 @@ FROM EMPLOYEE;
 --        CASE J6: 
 --        RAISE_MONEY = SALARY*1.15
 --        OTHER :
---        RAISE_MONEY = SALARY*1.05
-
-
-
-
-
-
-
-
-
+--        RAISE_MONEY = SALARY*1.05}
 
 
 
 ----------------------------------------------------------
-/*
+/*  CASE 표현식 
+    CASE WHEN THEN 
+    END
+    CASE WHEN 조건식1 THEN 결과값1
+         WHEN 조건식2 THEN 결과값 2 
+         ...
+         ELSE 결과값 N
+    END 
+ */     
+--사원명, 급여가 5백만원 이상이면 '고급' , 350만원 이상이면 '중급', 나머지는 '초급'
 
+SELECT EMP_NAME, SALARY
+      ,CASE WHEN SALARY >=5000000 THEN '고급'
+            WHEN SALARY >=3500000 THEN '중급'
+            ELSE '초급' 
+        END AS "급수"
+FROM EMPLOYEE;
+        
+--=========================================================
+-----------------------<그룹 함수>-----------------------
+--=========================================================
+
+/*
+    SUM(숫자타입의 컬럼) : 해당컬럼값들의 합계를 구해서 반환 
 */
+--전 사원의 총 급여액 조회 
+--그룹함수, 단일행 함수 같이 못함, 사원명은 100명이면 100명 다나온다
+--SUM은 1개 나오므로 사원명을 누구로 해야하나 문제가 생긴다.
+
+SELECT SUM(SALARY) AS "총급여액"
+FROM EMPLOYEE;
+
+--남자 사원의 총 급여액 조회 
+SELECT SUM(SALARY) AS "남자사원의 총급여액"
+FROM EMPLOYEE;
+WHERE SUBSTR(EMP_NO,8,1)IN ('1','3');
+
+--부서코드가 'D5'인 사원의 총 급여액 조회 
+SELECT SUM(SALARY) "D5사원 총 급여액 "
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5';
+
+--부서코드가 'D5'인 사원의 연봉(보너스 포함)의 총 합계액 조회 
+SELECT SUM(12*SALARY*(1+NVL(BONUS,0))) "D5'인 사원의 연봉(보너스 포함)"
+FROM EMPLOYEE
+WHERE DEPT_CODE = 'D5';
+
+--전사원의 총급여액 조회 
+SELECT TO_CHAR(SUM(SALARY),'L999,999,999')"총 급여액"
+FROM EMPLOYEE;
+
+----------------------------------------------------------
+
+/*
+    AVG(숫자타입컬럼) :  해당컬럼 값들의 평균을 반환 
+*/
+
+SELECT AVG(SALARY) AS "평균 급여액"
+FROM EMPLOYEE;
+
+--반올림
+SELECT ROUND(AVG(SALARY)) AS "평균 급여액"
+FROM EMPLOYEE; --3047663
+
+SELECT ROUND(AVG(SALARY), 1) AS "평균 급여액"
+FROM EMPLOYEE; --3047662.6
+
+SELECT ROUND(AVG(SALARY), -1) AS "평균 급여액"
+FROM EMPLOYEE; --3047660
+
+----------------------------------------------------------
+/*
+    MIN (모든 타입컬럼-문자도 가능) 해당 컬럼 값들 중에 가장 작은 값 반환  
+    MAX (모든 타입 컬럼) : 해당 컬럼 값들 중에 가장 큰 값 반환 
+*/
+
+
+--급여 중에서 가장 적게 받는 값
+--SELECT EMP_NAME, MIN(SALARY) AS "급여중 최저"
+--단일행 함수인 네임이 그룹 이름이 아니다 
+--따라서 아래와 같이 네임 앞에도 MIN을 붙여준다 
+
+SELECT MIN(EMP_NAME), MIN(SALARY)
+FROM EMPLOYEE;
+--네임중에서 가장 낮은 값 김정복, 맨처음 나오는 글자 (사전순)
+-- 급여 최저 값과 일치 하지 않음 
+
+SELECT MIN(HIRE_DATE), MIN(SALARY) 
+FROM EMPLOYEE;
+--가장 먼저 입사한 사람이 나온다,  두개가 따로 따로 들어간다. 
+
+SELECT MAX(HIRE_DATE), MAX(SALARY) 
+FROM EMPLOYEE;
+--따로 따로  최고치 값
+
+
+----------------------------------------------------------
+/*
+    COUNT 행의 갯수, 
+    COUNT(* | 전체 행
+    COUNT(|컬럼|DISTINCT 컬럼) : 행의 갯수 반환
+    COUNT(*) : 조회된 결과의 모든 행의 갯수를 반환한다. 
+    COUNT(컬럼): 제시한 컬럼의 NULL값을 제외한 행의 갯수를 반환 
+    COUNT(DISTINCT 컬럼) : 해당 컬럼값 중에서 중복을 제거한 후의 행의 갯수
+    
+*/
+--전체 사원 수 조회 
+SELECT COUNT(*)
+FROM EMPLOYEE;
+
+--여사원 조회 
+SELECT COUNT(*)
+FROM EMPLOYEE
+WHERE SUBSTR(EMP_NO,8,1) IN ('2','4');
+
+--보너스를 받는 사원 수 
+SELECT COUNT(BONUS)
+FROM EMPLOYEE;
+
+--부서 배치를 받은 사원
+SELECT COUNT(DISTINCT DEPT_CODE)
+FROM EMPLOYEE;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

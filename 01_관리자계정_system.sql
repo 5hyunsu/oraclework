@@ -52,9 +52,13 @@ ALTER USER aie DEFAULT TABLESPACE users quota UNLIMITED on users;
 저장은 c-이름-workspace에 저장 
 */
 
---새로만들기
+--새로만들기 
 ALTER SESSION set "_oracle_script" = true;
 
+--1. 세션 부터 바꿔주고 ,
+--2. 사용자 생성하고.
+--3. 사용자 권한주고 
+--4. 테이블 넣고 
 CREATE user workbook IDENTIFIED BY workbook;
 GRANT RESOURCE, CONNECT TO workbook;
 ALTER USER workbook DEFAULT TABLESPACE users quota UNLIMITED on users;
