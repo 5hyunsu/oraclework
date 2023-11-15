@@ -52,7 +52,7 @@ ALTER USER aie DEFAULT TABLESPACE users quota UNLIMITED on users;
 저장은 c-이름-workspace에 저장 
 */
 
---새로만들기 
+--(1) WORK BOOK 새로만들기 (SELECT 구문 연습용)
 ALTER SESSION set "_oracle_script" = true;
 
 --1. 세션 부터 바꿔주고 ,
@@ -62,6 +62,12 @@ ALTER SESSION set "_oracle_script" = true;
 CREATE user workbook IDENTIFIED BY workbook;
 GRANT RESOURCE, CONNECT TO workbook;
 ALTER USER workbook DEFAULT TABLESPACE users quota UNLIMITED on users;
+
+-- (2) DDL 사용자 새로만들기 
+ALTER SESSION set "_oracle_script" = true; --씨 샵샵 없애주는 것 
+CREATE user DDL IDENTIFIED BY DDL;
+GRANT RESOURCE, CONNECT TO DDL;
+ALTER USER DDL DEFAULT TABLESPACE users quota UNLIMITED on users;
 
 
 
