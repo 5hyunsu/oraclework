@@ -1,7 +1,7 @@
 /*
     <JOIN>
     
-    2개 이상희 테이블에서 데이터를 조회하고자 할 때 사용되는 구문 
+    2개 이상의 테이블에서 데이터를 조회하고자 할 때 사용되는 구문 
     조회결과 하나의 결과물(RESULT SET)로 나옴 
     RESULTS SET
     
@@ -13,7 +13,7 @@
     JOIN은 크기 "오라클 전용구문"과 "ANSI 구문"(ANSI=미국 국립표준 협회) 
     오라클에서는 2개 모두 사용 가능 
     
-        [용어 정리]
+                      [용어 정리]
     오라클 전용구문         |       ANSI
 -------------------------------------------------------------
     등가조인               |      내부조인(INEER JOIN) =>JOIN USING/ON
@@ -31,7 +31,7 @@
 
 */
 --전체사원들의 사번, 사원명, 부서명, 부서코드. 부서명을 조회 
-/*
+
 1번
 SELECT EMP_ID, EMP_NAME, DEPT_CODE
 FROM EMPLOYEE;
@@ -42,7 +42,7 @@ FROM DEPARTMET;
 1번 2번을 합쳐야 한다. 
 두개 테이블을 합쳐서 사용해야 한다. 이럴 때 JOIN 사용 
 
-*/
+
 -------------------------------------------------------------
 /*
     1.등가조인(EQUAL JOIN)/ 내부조인(INNER JOIN)
@@ -61,6 +61,7 @@ SELECT EMP_ID, EMP_NAME, DEPT_CODE,DEPT_TITLE
 FROM EMPLOYEE,DEPARTMENT
 WHERE DEPT_CODE = DEPT_ID;
 -- 일치하는 값이 없는 행은 조회에서 제외(NULL값 제외) 
+--현정보,선우정보는 부서가 없어서 제외
 
 --(2) 연결할 두 컬럼명이 같은 경우(EMPLOYEE:JOB_CODE, JOB:JOB_CODE)
 --전체 사원들의 사번, 사원명, 직급코드, 직급명 조회 
@@ -85,12 +86,12 @@ WHERE E.JOB_CODE = J.JOB_CODE;
     FROM에 기준이 되는 테이블을 하나만 기술
     JOIN절에 같이 조회하고자 하는 테이블을 기술
         + 매칭시킬 컬럼에 대한 조건도 기술
-     -JOIN USING, JOIN ON
+     -JOIN 테이블명 USING 컬럼, JOIN 테이블명 ON (컬럼1=컬럼2)
     WHERE절에 매칭시킬 컬럼(연결고리)에 대한 조건 제시함
   */
   
 --(1) 연결할 두 컬럼명이 다른 경우(EMPLOYEE:DEPT_CODE, DEPARTMENT:DEPT_ID)
---  JOIN ON으로만 사용 가능
+--  ★★★JOIN ON으로'만' 사용 가능
 --전체사원들의 사번, 사원명, 부서명, 부서코드. 부서명을 조회 
 -- DEPT_CODE와 DEPT_ID가 동일하나 컬럼명은 다른경우
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, DEPT_TITLE
@@ -107,6 +108,10 @@ JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
 --해결방법 1) 테이블 별칭 사용
 SELECT EMP_ID, EMP_NAME, E.JOB_CODE, JOB_NAME
 FROM EMPLOYEE E
+JOIN JOB J ON (EMPLOYEE.JOB_CODE=JOB.JOB_CODE); --이와같이 테이브 별칭 같이 써줘야한다.
+
+SELECT EMP_ID, EMP_NAME, E.JOB_CODE, JOB_NAME
+FROM EMPLOYEE 
 JOIN JOB J ON (E.JOB_CODE=J.JOB_CODE);
 
 --해결방법 2) JOIN USING 구문을 사용하는 방법(두 컬럼명이 일치할 떄만 사용가능)
@@ -135,8 +140,9 @@ WHERE E.JOB_CODE =J.JOB_CODE
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -->>ANSI 구문 
 SELECT EMP_ID, EMP_NAME, JOB_NAME, SALFROM EMPLOYEE
+FROM EMPLOYEE
 JOIN JOB USING(JOB_CODE)
-WHERE JOB_NAME='대리';
+WHERE JOB_NAME='대리'; --순서는 상관없다
 
 --------------------<실습문제>-------------------------------------------------------------------------------------------------------------------------------------------
 --1.부서가 인사관리부인 사원의 사번, 이름, 부서명, 보너스 조회
@@ -209,6 +215,7 @@ WHERE DEPT_TITLE !='총무부';
 /*
     2.포괄조인/ 외부조인(OUTER JOIN)
     두 테이블간의 JOIN시 일치하지 않는 행도 포함시켜 조회
+    NULL값도 나온다. 
     단, 반드시 LEFT/RIGHT 를 지정 해야 됨(기준이 되는 테이블 지정)
     
 */
@@ -230,8 +237,9 @@ LEFT OUTER JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
 -->>오라클 전용 구문 
 SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
 FROM EMPLOYEE, DAPARTMENT
-WHERE DEPT_CODE= DEPT_ID(+); 
+WHERE DEPT_CODE(+)= DEPT_ID; 
 --기준이 아닌 테이블의 컬럼명 뒤에 (+)를 붙여준다. 
+--EMPLOYEE가 기준인데 그거 반대편인 DEPT_ID(DEPARTMENT)플러스표시
 
 --1) RIGHT[OUTER] JOIN : 두 테이블 중 오른쪽에 기술된 테이블이 기준으로 JOIN
 -->>ANSI 구문 
@@ -281,14 +289,14 @@ FULL JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
     EMPLOYEE 테이블에서 사수의 아이디를 다시 EMPLOYEE자체에서 갖고와야 하기 때문
     같은 테이블을 다시 한번 조인하는 경우 
     
-사수가 있는 사원의 사번, 사원명, 직급코드 =>EMPLOYEE
-사수의 사번, 사원명, 직급코드 =>EMPLOYEE
+    사수가 있는 사원의 사번, 사원명, 직급코드 =>EMPLOYEE
+              사수의 사번, 사원명, 직급코드 =>EMPLOYEE
         
 */
 -->>오라클 주문 
     SELECT E.EMP_ID,E.EMP_NAME,E.DEPT_CODE,
            M.EMP_ID,M.EMP_NAME,M.DEPT_CODE
-    FROM EMPLOYEE E, EMPLOYEE M
+    FROM EMPLOYEE E, EMPLOYEE M --똑같은 테이블이 2개라 구분되게 별칭 써준다.
     WHERE E.MANAGER_ID=M.EMP_ID;
 --원래직원E, 사수는M
 
@@ -339,7 +347,7 @@ FULL JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
 -->>ANSI 구문
     SELECT E.EMP_ID, E.EMP_NAME, D.DEPT_TITLE, J.JOB_NAME
     FROM EMPLOYEE
-    JOIN ON DEPARTMENYT ON(DEPT_CODE=DEPT_ID) --ON: 테이블 별칭 써줘야
+    JOIN DEPARTMENYT ON(DEPT_CODE=DEPT_ID) --ON: 테이블 별칭 써줘야
     JOIN JOB USING(JOB_CODE);
 
 --사원의 사번, 사원명, 부서명,지역명 조회 
@@ -412,7 +420,8 @@ FULL JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
     AND
       D.LOCATION_ID = L.LOCAL_CODE
     AND
-      L.NATIONAL_CODE = N.NATIONAL_CODE
+      '
+      
     AND
       E.JOB_CODE = J.JOB_CODE
     AND
