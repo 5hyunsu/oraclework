@@ -7,30 +7,30 @@
 
 --"박정보"와 같은 부서에 속한 사람들을 조회 하고 싶다 
 --1. 박정보 사원의 부서코드를 조회 
-SELECT DEPT_CODE 
-FROM EMPLOYEE
-WHERE EMP_NAME='박정보';
+    SELECT DEPT_CODE 
+    FROM EMPLOYEE
+    WHERE EMP_NAME='박정보';
 
 --2. 부서 코드가 'D9'인 사원의 정보를 조회 
-SELECT EMP_NAME
-FROM EMPLOYEE
-WHERE DEPT_CODE='D9';
+    SELECT EMP_NAME
+    FROM EMPLOYEE
+    WHERE DEPT_CODE='D9';
 
 -- > 두개를 하나의 쿼리로 만들어야 한다. D9가 들어갈 자리에 넣어준다.
-SELECT EMP_NAME
-FROM EMPLOYEE
-WHERE DEPT_CODE=(SELECT DEPT_CODE 
-                FROM EMPLOYEE
-                WHERE EMP_NAME='박정보');
+    SELECT EMP_NAME
+    FROM EMPLOYEE
+    WHERE DEPT_CODE=(SELECT DEPT_CODE 
+                    FROM EMPLOYEE
+                    WHERE EMP_NAME='박정보');
                 
 --전 직원의 평균 급여 보다 더 많이 받는 사원의 사번, 사원명, 급여, 직급코드를 조회하시오
-SELECT EMP_ID,
-       EMP_NAME,
-       SALARY,
-       JOB_CODE
-FROM EMPLOYEE
-WHERE SALARY >=(SELECT AVG(SALARY)
-                    FROM EMPLOYEE);
+    SELECT EMP_ID,
+           EMP_NAME,
+           SALARY,
+           JOB_CODE
+    FROM EMPLOYEE
+    WHERE SALARY >=(SELECT AVG(SALARY)
+                        FROM EMPLOYEE);
 
 --SELECT AVG(SALARY)FROM EMPLOYEE;  평균급여
 
@@ -168,7 +168,7 @@ HAVING SUM(SALARY)=(SELECT MAX(SUM(SALARY))
 SELECT JOB_CODE
 FROM EMPLOYEE
 --WHERE EMP_NAME='조정연' EMP_NAME='전지연';
-WHERE EMP_NAME IN ('조정연','전지연');
+WHERE EMP_NAME IN ('조정연','전지연'); --이 중에서 하나라도 일치하는 사람 
 
 --1.2 ;직급코드가 (JOB_CODE)가 J3,J7인 사원의 사번, 사원명, 직급토드, 급여조회
 SELECT EMP_ID, EMP_NAME, JOB_CODE,SALARY
@@ -198,7 +198,7 @@ WHERE JOB_NAME='대리'
 SELECT EMP_ID, EMP_NAME, JOB_NAME, SALARY
 FROM EMPLOYEE
 JOIN JOB USING(JOB_CODE)
-WHERE JOB_NAME='대리'
+WHERE JOB_NAME='대리'   --ANY : OR 그중에서 찾는 것이므로 OR와 비슷하다
     AND SALARY > ANY(SELECT SALARY
                      FROM EMPLOYEE
                     JOIN JOB USING(JOB_CODE)
@@ -225,7 +225,7 @@ WHERE JOB_NAME='차장'
  --AND SALARY < SELECT MAX(SALARY)  이렇게 써도 괜찮다 
                  FROM EMPLOYEE
                  JOIN JOB USING(JOB_CODE)
-                 WHERE JOB_NAME='과장');  
+                 WHERE JOB_NAME='과장');  --220, 250, 376
         --2200, 2500, 3760 이것 중에서 하나라도 작으면 된다 
 
 --4) 과장직급임에도 불구하고 차장직급인 사원들의  
@@ -242,7 +242,10 @@ WHERE JOB_NAME='과장'  --220, 250, 376
                    JOIN JOB USING(JOB_CODE)
                    WHERE JOB_NAME='차장');  --280,155,249,248
 
+
+--ALL = AND와 비슷 하다 , 가장 큰값보다 커야 한다. 
 --ALL: 서브쿼리의 값들 중 가장 큰값보다 큰 값을 얻어 오고 싶을 때 사용 
+-- X > ALL 1 AND 2 AND 4 
 --"차장의 가장 많이 받는 급여보다 더 많이 받는 과장" 
 --크다는 가장 작은 값보다 크고
 --비교대상 > 값1 AND 비교대상 > 값2 AND 비교대상 > 값3
@@ -300,27 +303,27 @@ WHERE EMP_NAME !='지정보'
 */
 --1) 각 직급별 최소급여를 받는 사원의 사번, 이름, 직급코드, 급여조회
 --  1.1 각 직급별로 최소급여를 받는 사원의 직급코드, 최소급여 조회
-SELECT JOB_CODE, MIN(SALARY)
-FROM EMPLOYEE
-GROUP BY JOB_CODE;
+    SELECT JOB_CODE, MIN(SALARY)
+    FROM EMPLOYEE
+    GROUP BY JOB_CODE;
 
 --아래와 같이 계속 써줘야 한다. 
-SELECT EMP_ID, EMP_NAME, JOB_CODE, SALARY
-FROM EMPLOYEE
-GROUP BY JOB_CODE = 'J5' AND SALARY =2200000
-      OR JOB_CODE = 'J6' AND SALARY =2000000;
-
-SELECT EMP_ID, EMP_NAME, JOB_CODE, SALARY
-FROM EMPLOYEE
-WHERE(JOB_CODE, SALARY) = ('J5', 2200000);
-        --7번 수행 
+    SELECT EMP_ID, EMP_NAME, JOB_CODE, SALARY
+    FROM EMPLOYEE
+    GROUP BY JOB_CODE = 'J5' AND SALARY =2200000
+          OR JOB_CODE = 'J6' AND SALARY =2000000;
+    
+    SELECT EMP_ID, EMP_NAME, JOB_CODE, SALARY
+    FROM EMPLOYEE
+    WHERE(JOB_CODE, SALARY) = ('J5', 2200000);
+            --7번 수행 
 */
 
 --다중행 다중열 서브쿼리, 7번 써줄 필요 없이 
 --IN 안에 있는 값을 가져오면 된다. 
 SELECT EMP_ID, EMP_NAME, JOB_CODE, SALARY
 FROM EMPLOYEE
-WHERE(JOB_CODE, SALARY) IN (SELECT JOB_CODE, MIN(SALARY)
+WHERE(JOB_CODE, SALARY) IN (SELECT JOB_CODE, MIN(SALARY) --최소값
                             FROM EMPLOYEE
                             GROUP BY JOB_CODE)
 ORDER BY JOB_CODE;            
@@ -329,7 +332,7 @@ ORDER BY JOB_CODE;
 --  사번, 사원명, 코드, 급여 조회 
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE
-WHERE (DEPT_CODE, SALARY) IN (SELECT DEPT_CODE, MAX(SALARY)
+WHERE (DEPT_CODE, SALARY) IN (SELECT DEPT_CODE, MAX(SALARY) --MAX는 값이 1개
                               FROM EMPLOYEE
                               GROUP BY DEPT_CODE)
 ORDER BY DEPT_CODE; 
@@ -338,6 +341,7 @@ ORDER BY DEPT_CODE;
     5.인라인 뷰 (INLINE VIEW)
       --FROM 다음에 테이블이 나오는데, 가공해서 갖고올 때 
       --가짜 테이블 하나 만들어서 마치 테이블 처럼 사용
+      --순위를 매긴다던지, 정렬은 제일 마지막에하니까
       
 */
 --사원들의 사번, 사원명, 보너스 포함 연봉, 부서코드 조회 
@@ -361,6 +365,7 @@ SELECT EMP_ID, EMP_NAME,
 FROM EMPLOYEE;
 --WHERE 연봉 >=30000000;  "연봉": 부적합한 식별자 
 --순서상 SELECT가 뒤에 있어서  연봉을 갖고 올 수 없다. 
+--WHERE절로도 가능은 하다. 
 
 SELECT EMP_ID, EMP_NAME, 
     12*SALARY*(1+NVL(BONUS,0)) AS "연봉",
@@ -412,6 +417,7 @@ FROM EMPLOYEE
 WHERE ROWNUM <=5
 ORDER BY SALARY;-- 순서대로는 나오지 않는다. 
 
+
 --순서 하려면
 --먼저 정렬을 (ORDER BY)한 테이블을 만드고 
 --그 테이블에서 ROWNUM을 부여 하면 된다. 
@@ -453,22 +459,24 @@ WHERE ROWNUM <=3;
        1. 같은 서브 쿼리가 여러번 사용될 경우 중복 작성을 피할 수 있다
        2. 실행 속도도 빨라짐
    
-*/
-WITH TOPN_SAL1 AS(SELECT DEPT_CODE ,CEIL(AVG(SALARY)) AS "평균급여"
-                  FROM EMPLOYEE
-                  GROUP BY DEPT_CODE
-                  ORDER BY 평균급여 DESC)
-
-SELECT*
-FROM TOPN_SAL1
-WHERE ROWNUM <=5;
+*/  --테이블 이름은 내맘대로, FROM에 들어갈 것을 위로 땡겨서 기술
+    --쓸일이 많지는 않다. 단점은. 여러번 쓸 수가 없다
+    WITH TOPN_SAL1 AS(SELECT DEPT_CODE ,CEIL(AVG(SALARY)) AS "평균급여"
+                      FROM EMPLOYEE
+                      GROUP BY DEPT_CODE
+                      ORDER BY 평균급여 DESC)
+    
+    SELECT*
+    FROM TOPN_SAL1
+    WHERE ROWNUM <=5;
 
 ------------------------------------------------------
 /*
     7. 순위 매기는 함수(WINDOW FUNCTION)
     RANK() OVER(정렬기준) | DENSE_RAK() OVER(정렬기준) 
     -RANK() OVER(정렬기준): 동일한 순위 이후의 등수를 동일한 인원 수 만큼 건너뛰고 순위를 계산한다. 
-                            EX) 공동  1순위가 3명이면 그 다음 순위는 4위 
+                            EX) 공동  1순위가 3명이면 그 다음 순위는 4위
+                            일반적으로는 RANK를 많이 쓴다. 
     -DENSE_RANK() OVER  (정렬기준)  : 동일한 순위가 있어도 다음 등수는 무조건 1씩 증가 
                             EX) 공동 1순위가 3명이면 그 다음 순위는 2위 
     >>두 함수는 SELECT 절에서만 사용 한다.                         

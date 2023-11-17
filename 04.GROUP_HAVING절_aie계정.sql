@@ -59,7 +59,7 @@ GROUP BY SUBSTR(EMP_NO,8,1); --그룹이 나눠진자 1,2로 (3,4도 있어야 �
 
 --1번 방법
 SELECT 
-    DECODE(SUBSTR(EMP_NO,8,1),'1','남','2','여'),COUNT(*)
+    DECODE(SUBSTR(EMP_NO,8,1),'1','남','2','여')AS "성별",COUNT(*)
     FROM EMPLOYEE
 GROUP BY SUBSTR(EMP_NO,8,1);
 
@@ -89,6 +89,7 @@ SELECT DEPT_CODE AS 부서코드, ROUND(AVG(SALARY)) AS "평균 급여"
     FROM EMPLOYEE
 GROUP BY DEPT_CODE;
 
+--★★★ 그룹에는 해빙으로 처리한다. 
 --각 부서별 평균 급여가 300만원 이상인 부서만 조회 
 SELECT DEPT_CODE AS 부서코드, ROUND(AVG(SALARY)) AS "평균 급여"
     FROM EMPLOYEE
