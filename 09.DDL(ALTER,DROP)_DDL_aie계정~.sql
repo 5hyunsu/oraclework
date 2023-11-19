@@ -123,7 +123,7 @@ ALTER TABLE DEPT_COPY2 DROP COLUMN DEPT_ID;
     3) 컬럼명/ 제약 조건 명 / 테이블명 변경 (RENAME)
 */
 --====1.컬럼명 변경 : RENAME COLUMN 기존컬럼명 TO 바꿀 컬럼명
---DEPT_COPY테이브의 DEPT_TITLE를 DEPT_TITLE를 DEPT_NAME으로 컬럼명 변경
+--DEPT_COPY테이브의  DEPT_TITLE를 DEPT_NAME으로 컬럼명 변경
 ALTER TABLE DEPT_COPY
 RENAME COLUMN DEPT_TITLE TO DEPT_NAME;
 
@@ -153,8 +153,8 @@ RENAME TO DEPT_TEST2;
     --            DROP TABLE 테이블명 CASCADE CONSTRAINT ;
     
 */
-DROP TABLE DEPT_TEST; 
-안에 데이터 있어도 통째로 삭제 된다.
+--DROP TABLE DEPT_TEST; 
+--안에 데이터 있어도 통째로 삭제 된다.
 
 
 

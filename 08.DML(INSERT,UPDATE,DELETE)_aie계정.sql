@@ -141,7 +141,7 @@ INSERT INTO EMP_DEPT (EMP_ID, EMP_NAME, DEPT_CODE, HIRE_DATE)VALUES(1,1,1,1);
     5) 조건을 제시하여 각 테이블에 INSERT 가능 
     
     [표현식]
-    INDERT ALL 
+    INSERT ALL 
     WHEN 조건1 THEN 
     INTO 테이블명1 VALUES(컬럼명, 컬럼명...)
     WHEN 조건2 THEN 
