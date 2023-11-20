@@ -10,7 +10,7 @@
 */
 
 /*
-    1.시스템 권한의 종류 
+    1.시스템 권한의 종류 (권한이 많다) 
     -CREATE SESSION : 접속할 수 있는 권한 
     -CREATE TABLE : 테이블을 생성 할 수 있는 권한 
     -CREATE VIEW : VIEW를 생성할 수 있는 권한
@@ -18,9 +18,10 @@
     ...
 */
 --1.1.SAMPLE / sample 계정 생성
-ALTER SESSION set "_oracle_script" = true; -- c## 안붙이려고
+ALTER SESSION set "_oracle_script" = true; 
+-- c## 안붙이려고, 세션변경후 돌린다. 
 CREATE user sample IDENTIFIED BY sample;
---접속권한이 없어 접속 못함 
+--접속권한이 없어 접속 못함, 만드리만 함  
 
 --1.2.접속을 위해 create session 권한 부여 
 GRANT create session to sample;

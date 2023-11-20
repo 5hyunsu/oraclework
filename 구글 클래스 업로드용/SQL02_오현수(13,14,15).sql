@@ -83,23 +83,42 @@ ORDER BY SUBSTR(TERM_NO,1,4);
 13. 학과 별 휴학생 수를 파악하고자 한다. 학과 번호와 휴학생 수를 표시하는 SQL 문장을
 작성하시오.
 */
+-- 휴학생 수가 없는 학과는 출력이 되지 않는다. DECODE 함수의 차이 
 SELECT DEPARTMENT_NO AS 학과번호, COUNT(ABSENCE_YN) AS 휴학생수
 FROM TB_STUDENT
 WHERE ABSENCE_YN = 'Y'
 GROUP BY DEPARTMENT_NO
 ORDER BY DEPARTMENT_NO;
 
+--13. PROF  : 휴학생 수가 0이여도 출력 된다.  위와의 차이점 구분 
+SELECT DEPARTMENT_NO 학과번호, COUNT(DECODE(ABSENCE_YN, 'Y',1)) "휴학생 수"
+   FROM TB_STUDENT
+ GROUP BY DEPARTMENT_NO
+ ORDER BY 학과번호;
 
 
-/* ---(미완성)--카운트가 안됨 ------------
+/* ---------------
 14. 춘 대학교에 다니는 동명이인(同名異人) 학생들의 이름을 찾고자 한다. 어떤
 SQL 문장을 사용하면 가능하겠는가?
 */
-
-SELECT STUDENT_NAME AS 동일이름, COUNT(STUDENT_NAME) AS 동명인수
+--SOL1
+SELECT STUDENT_NAME AS 동일이름,
+      COUNT(*) AS 동명인수
 FROM TB_STUDENT
-GROUP BY STUDENT_NAME 
+GROUP BY STUDENT_NAME
+HAVING COUNT(STUDENT_NAME)>1
 ORDER BY STUDENT_NAME;
+
+--SOL2 
+SELECT STUDENT_NAME AS 동일이름,
+      COUNT(*) OVER (PARTITION BY STUDENT_NAME) AS 동명인수
+FROM TB_STUDENT;
+--GROUP BY STUDENT_NAME;
+--HAVING COUNT(STUDENT_NO)>1
+--ORDER BY STUDENT_NAME;
+
+
+
 
 /* -----(미완성)--누적합 X -----------
 15. 학번이 A112113 인 김고운 학생의 년도, 학기 별 평점과 년도 별 누적 평점, 총
@@ -108,8 +127,8 @@ ORDER BY STUDENT_NAME;
 */
 SELECT SUBSTR(TERM_NO,1,4) AS 년도,SUBSTR(TERM_NO,5,2) AS 학기, ROUND(POINT,1) AS 평점
 FROM TB_GRADE
-WHERE STUDENT_NO='A112113';
-
+WHERE STUDENT_NO='A112113'
+CONNECT BY PRIOR 학기 = 년도;
 
 
 

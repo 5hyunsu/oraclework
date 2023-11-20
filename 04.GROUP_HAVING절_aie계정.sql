@@ -53,7 +53,8 @@ ORDER BY 4 DESC;
 
 --여성별 남성별 사원의 수 
 SELECT 
-    COUNT(EMP_NO) AS 성별
+    COUNT(EMP_NO) AS 성별,
+    SUM(SALARY)
 FROM EMPLOYEE
 GROUP BY SUBSTR(EMP_NO,8,1); --그룹이 나눠진자 1,2로 (3,4도 있어야 한다)
 
@@ -85,13 +86,15 @@ ORDER BY 1;
   
 */
 -- 각 부서별 평균 급여 조회 (부서코드, 평균 급여)
-SELECT DEPT_CODE AS 부서코드, ROUND(AVG(SALARY)) AS "평균 급여"
+SELECT DEPT_CODE AS 부서코드, 
+       ROUND(AVG(SALARY)) AS "평균 급여"
     FROM EMPLOYEE
 GROUP BY DEPT_CODE;
 
 --★★★ 그룹에는 해빙으로 처리한다. 
 --각 부서별 평균 급여가 300만원 이상인 부서만 조회 
-SELECT DEPT_CODE AS 부서코드, ROUND(AVG(SALARY)) AS "평균 급여"
+SELECT DEPT_CODE AS 부서코드, 
+       ROUND(AVG(SALARY)) AS "평균 급여"
     FROM EMPLOYEE
 --WHERE ROUND(AVG(SALARY)) >=3000000  오류 뜬다, 그룹에는 해빙
 --ORA-00934: 그룹 함수는 허가되지 않습니다
@@ -136,7 +139,7 @@ SELECT
     DEPT_CODE AS "부서코드" 
 FROM EMPLOYEE
 GROUP BY DEPT_CODE
-HAVING BONUS IS NULL
+HAVING BONUS=0
 ORDER BY DEPT_CODE;
 
 --PROF
@@ -146,6 +149,13 @@ SELECT
 FROM EMPLOYEE
 GROUP BY DEPT_CODE
 HAVING COUNT(BONUS=0);
+
+SELECT
+    DEPT_CODE,
+    COUNT(BONUS)
+FROM EMPLOYEE
+GROUP BY DEPT_CODE
+HAVING COUNT(BONUS)=0;
 ---------------------------------------------------------------
 /*
     <집계함수>

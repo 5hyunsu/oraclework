@@ -346,7 +346,7 @@ SELECT LAST_DAY(SYSDATE)FROM DUAL;
 --사원명, 입사일, 입사한 달의 마지막 날짜를 조회 
 SELECT EMP_NAME, HIRE_DATE, LAST_DAY(HIRE_DATE)
 FROM EMPLOYEE;
---사원명, 입사일, 입사한 달의 마지막 날짜, 입사한 달의 근무일수 조회 
+--사원명, 입사일, 입사한 달의 마지막 날짜, ★★★ +1 해주는 것 기억 입사한 달의 근무일수 조회  
 SELECT EMP_NAME, HIRE_DATE, LAST_DAY(HIRE_DATE),LAST_DAY(HIRE_DATE)-HIRE_DATE+1
 FROM EMPLOYEE;
 ----------------------------------------------------------
@@ -392,7 +392,7 @@ ORDER BY 입사년도, 입사월, 입사일;
 
 */
 SELECT TO_CHAR(1234) FROM DUAL;  
---숫자나 문자 똑같이 보임 , 그러나  왼족정렬은 문자, 오른쪽 정렬은 숫자
+--숫자나 문자 똑같이 보임 , 그러나  왼쪽정렬은 문자, 오른쪽 정렬은 숫자
 SELECT TO_CHAR(1234,'999999')자리 FROM DUAL;
 --(9가6개)6자리를 차지하고 앞에 2자리가 없으니 앞에 2자리가 공백임 
 
@@ -600,7 +600,7 @@ FROM EMPLOYEE;
 /*
     NULLIF(비교대상1, 비교대상2)
     -두개의 값이 일치하면 NULL반환
-    -두개의 값이 일치하지 않으면 비교대강1을 반환 
+    -두개의 값이 일치하지 않으면 비교대상1을 반환 
     
 */
 

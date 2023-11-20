@@ -168,6 +168,14 @@
         D.CATEGORY='예체능'
         AND
         C.CLASS_NO (SELECT  R.CLASS_NO;
+   --13.prof
+   SELECT CLASS_NAME, DEPARTMENT_NAME
+    FROM TB_CLASS
+    LEFT JOIN TB_CLASS_PROFESSOR USING(CLASS_NO)
+    LEFT JOIN TB_DEPARTMENT USING(DEPARTMENT_NO)
+    WHERE CATEGORY = '예체능'
+    AND PROFESSOR_NO IS NULL;
+        
         
 /*  ★ NVL 적용했는데 지도교수 미지정이 안나옴
     14. 춘 기술대학교 서반아어학과 학생들의 지도교수를 게시하고자 한다. 학생이름과 
@@ -271,7 +279,15 @@
          TB_GRADE
     WHERE 
     
-
+    -- 19.prof
+    SELECT DEPARTMENT_NAME "계열 학과명", ROUND(AVG(POINT),1) 전공평점
+    FROM TB_DEPARTMENT
+    JOIN TB_STUDENT USING(DEPARTMENT_NO)
+    JOIN TB_GRADE USING(STUDENT_NO)
+    WHERE CATEGORY = (SELECT CATEGORY
+                                        FROM TB_DEPARTMENT
+                                        WHERE DEPARTMENT_NAME='환경조경학과')
+    GROUP BY DEPARTMENT_NAME;
 
 
 
