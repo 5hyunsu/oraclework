@@ -6,11 +6,11 @@
     -데이터의 변경사항(DML) 들을 하나의 트랜잭션에 묶어서 처리
     -DML문 한개를 수행할 때 트랜잭션이 존재하면 해당 트랜잭션에 같이 묶어서 처리 
      (트랜 잭션이 존재하지 않으면 트랜잭션을 만들어서 묶음
-     COMMIT하기 전까지의 변경 사항을 하나의 트랜잭션에 담게됨
+    -COMMIT하기 전까지의 변경 사항을 하나의 트랜잭션에 담게됨
      -트랜잭션의 대상이 되는  SQL: INSERT, UDATEE, DELETE 
     
     COMMIT(트랜잭션 종료 처리 후 확정)
-    ROLLBACK (트랜잭션 취소)
+    ROLLBACK (트랜잭션 취소) COMMIT 전까지는 가능 
     SAVEPOINT(임시저장) 
     
     -COMMIT 진행 : 
@@ -63,7 +63,7 @@ ROLLBACK;
 --------------------------------------------------------------
 --216,217, 214 사원 삭제
 DELETE FROM EMP_01
-WHERE EMP_ID IN (216,217,214);
+WHERE EMP_ID IN (216,217,214);  --트랜잭션에 남아있는 상태
 
 
 --임시 저장 점 만들기
@@ -88,7 +88,7 @@ COMMIT;
 /*
    *자동 COMMIT 되는 경우
     -정상 종료
-    -DCL과 DDL명령문이 수행된 경우
+    -DCL(GRANT REVOK)과 DDL(CREATE, ALTER, ROLLBACK, DROP)명령문이 수행된 경우
     
     *자동 ROLLBACK 되는 경우
     -비정상종료

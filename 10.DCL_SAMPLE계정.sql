@@ -43,8 +43,8 @@ SELECT * FROM AIE.DEPARTMENT;
 COMMIT;
 --관리자계정은 커밋 안해줘도 된다. 
 
-
-
+--2.3 권한 뺏긴 후 
+--ORA-01031: 권한이 불충분합니다
 
 
 

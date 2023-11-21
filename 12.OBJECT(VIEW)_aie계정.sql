@@ -1,5 +1,6 @@
 /*
-    <뷰 : VIEW>
+    <뷰 : VIEW>- 논리적으로 테이블만 가지고 있는 상태 
+    - 데이터는 디비에 저장하고 불러올 수 있는 키트 같은 느낌?
     SELECT 문을 저장해 둘 수 있는 객체
     (자주 쓰는 객체를 만들어 놓는다.) 
     (SELECT문 저장해 두면 JOIN을 여러개 해야 한다면 저장해둔다)
@@ -25,7 +26,8 @@ WHERE NATIONAL_NAME='한국';
     AS 서브쿼리문; 
     
 */
-
+--시퀀스, 뷰, 테이블 모두 만들 수 있다.  문법은 동일 
+--드롭 할 때도 동일 
 CREATE VIEW VM_EMPLOYEE
 AS SELECT EMP_ID, EMP_NAME, DEPT_TITLE, SALARY,NATIONAL_NAME
         FROM EMPLOYEE
@@ -77,9 +79,12 @@ WHERE NATIONAL_NAME='중국';
 SELECT * FROM USER_VIEWS;
 
 /*
+
     *뷰 컬럼에 별 칭 부여
+    ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
     서브쿼리의 SELECT 절에 함수식이나 산술연산식이 기술되어 있을 경우
-    ★반드시 별칭을 지정★해야 된다. 
+    ★반드시 별칭을 지정★해야 된다.★★★★★★★★★★★★★★★★★★ 
+    ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
  */
 --전체 사원의 사번, 사원명, 직급명,성별(남/여), 근무년수를 조회할 수 있는 VIEW(VM_EMP_JOB)생성
 --CREATE OR REPLACE VIEW 뷰명 : 리플레이스가 붙으면 같은 명칭 있으면 덮어쓰기 하시오,갱신한다
@@ -96,7 +101,7 @@ CREATE VIEW VM_EMP_JOB
 --갖고오기
 SELECT * FROM VM_EMP_JOB;
     
---별칭 부여를 아래와 같은 방식으로도 가능 
+--별칭 부여를 아래와 같은 방식으로도 가능 ★★★★★★★★★★★ 이방법이 편하긴 하다. 
 --덮어쓰기 OR REPLACE
 CREATE OR REPLACE VIEW  VM_EMP_JOB(사번2, 사원명2, 직급명, 성별, 근무년수)
     AS SELECT EMP_ID  , 
@@ -139,7 +144,7 @@ UPDATE VM_JOB
     SET JOB_NAME = '알바'
     WHERE JOB_CODE='J8';
 
---뷰를 통해 DELESTE
+--뷰를 통해 DELETE
 DELETE 
     FROM VM_JOB
     WHERE JOB_CODE='J8';
@@ -151,9 +156,14 @@ DELETE
     2) 뷰에 정의 되어 있지 않은  컬럼 중에 베이스 테이블 상에
        NOT NULL 제약조건이 지정되어 있는 경우 
     3) 산술 연산식이나 함수식으로 정의 되어 있는 경우 
+    -혼자서 알아서는 안된다. 
     EX) EXTRACT(YEAR FROM SYSDATE)- EXTRACT(YEAR FROM HIRE_DATE) 
     4) 그룹함수나 GROUP BY절이 포함되어 있는 경우 
+    -합계나 코드별로 되어있다고 한다면 1명인지 10명인지 모르므로 
+    어떤 사람이 얼마만큼 구하는지를 모른다. 
     5) DISTINCT 구문이 포함된 경우 
+    하나씩만 갖고왔기 때문에 그룹이랑 비슷한 느낌이다. 
+    5명중에 누구를 업데이트 할 지를 모르기 때문에 모른다. 
     6) JOIN을 이용하여 여러 테이블 연결시켜 놓은 경우 
     
 */
@@ -311,12 +321,11 @@ ROLLBACK;
     [표현식]
     CREATE [OR REPLACE][FORCE|NOFORCE] VIEW 뷰명 AS 서브쿼리
     2개 옵션 가능 
-    
     [WITH CHECK OPTION]
     [WITH READ ONLY];
     
     1)OR REPLACE: 기존에 동일 뷰가 있으면 갱신 시키고, 없으면 새로 생성
-    2) FORCE|NOFORCE
+    2) FORCE|NOFORCE (잘 사용하지 않는 것) 
        > FORCE   :  서브 쿼리에 기술된 테이블이 존재하지 않아도 뷰가 생성됨
 (기본값)> NOFORCE :  서브 쿼리에 기술된 테이블이 존재 해야만 뷰를 생성할 수 있다.
      3) WITH CHECK OPTION : 
