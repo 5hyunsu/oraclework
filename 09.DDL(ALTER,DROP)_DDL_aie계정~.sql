@@ -103,7 +103,7 @@ ALTER TABLE DEPT_COPY2 DROP COLUMN DEPT_ID;
     -FOREIGN KEY : ALTER TABLE 테이블명 ADD FOREIGN KEY(컬럼명) REFERENCES 참조할 테이블명 [(참조할 테이블명)];
     -UNIQUE      : ALTER TABLE 테이블명 ADD UNIQUE(컬럼명);
     -CHECK       : ALTER TABLE 테이블명 ADD CHECK (컬럼명);
-    -NOT NULL    :ALTER TABLE 테이블명 MODIFY 컬럼명 NOT NULL;  --NOT NULL은 ADD 사용하지 않고 MODIFY 사용 
+    -NOT NULL    : ALTER TABLE 테이블명 MODIFY 컬럼명 NOT NULL;  --NOT NULL은 ADD 사용하지 않고 MODIFY 사용 
 );
 */
 --===== 2. 제약조건 삭제 

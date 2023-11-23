@@ -47,6 +47,17 @@
     JOIN JOB USING(JOB_CODE)
     WHERE EXTRACT(YEAR FROM SYSDATE)-EXTRACT(YEAR FROM(TO_DATE(SUBSTR(EMP_NO,1,2),'RR'))) =
         (SELECT MIN(EXTRACT(YEAR FROM SYSDATE)-EXTRACT(YEAR FROM(TO_DATE(SUBSTR(EMP_NO,1,2),'RR')))) FROM EMPLOYEE);
+    
+    SELECT EMP_ID
+            , EMP_NAME
+            , EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM (TO_DATE(SUBSTR(EMP_NO,1,2), 'RR'))) 나이
+            , DEPT_TITLE
+            , JOB_NAME
+    FROM EMPLOYEE
+    JOIN DEPARTMENT ON(DEPT_CODE = DEPT_ID)
+    JOIN JOB USING(JOB_CODE)
+    WHERE EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM (TO_DATE(SUBSTR(EMP_NO,1,2), 'RR'))) =
+    (SELECT MIN(EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM (TO_DATE(SUBSTR(EMP_NO,1,2), 'RR')))) FROM EMPLOYEE);
 
 -- 나이
 -- 올해의 년도 추출
@@ -198,11 +209,18 @@
 
    
 -- 10. 퇴사 하지 않은 사람과 퇴사한 사람의 수 조회
-    SELECT ENT_YN, COUNT(ENT_YN) AS 퇴사하지 않은 사람 
-    COUNT(ENT_YN)
+    SELECT ENT_YN --, COUNT(*)
     FROM EMPLOYEE 
+    GROUP BY ENT_YN
     WHERE
         ENT_YN ='N'; 
+        
+    SELECT ENT_YN, COUNT(*)
+    FROM EMPLOYEE 
+    WHERE
+        ENT_YN ='N'
+    GROUP BY ENT_YN;
+    
 -- 10. PROF -- 그루핑 방법, 위에 컬럼 이름 짓기 주의 
     SELECT ENT_YN, COUNT(*)
     FROM EMPLOYEE
@@ -210,15 +228,22 @@
         
 -- 11. 보너스 포함한 연봉이 높은 5명의 사번, 이름, 부서 명, 직급, 입사일, 순위 조회
     SELECT *
-    FROM  (SELECT EMP_ID, EMP_NAME, DEPT_CODE, HIRE_DATE, RANK()OVER(ORDER BY 12*SALARY*(1+NVL(BONUS,0)) DESC) AS "순위"
+    FROM  (SELECT EMP_ID, 
+           EMP_NAME, 
+           DEPT_CODE, 
+           HIRE_DATE, 
+           RANK()OVER(ORDER BY 12*SALARY*(1+NVL(BONUS,0)) DESC) AS "순위",
+           DENSE_RANK()OVER(ORDER BY 12*SALARY*(1+NVL(BONUS,0)) DESC) AS "DENSE_RANK"
+       
         FROM EMPLOYEE)
     WHERE 순위 <6;
-SELECT *
-FROM (SELECT DEPT_CODE, ROUND(AVG(SALARY))평균급여
-      FROM EMPLOYEE
-      GROUP BY DEPT_CODE 
-      ORDER BY 평균급여 DESC)
-     WHERE ROWNUM <=5;
+    
+    SELECT *
+    FROM (SELECT DEPT_CODE, TO_CHAR(ROUND(AVG(SALARY)),'L999,999,999,999')평균급여
+          FROM EMPLOYEE
+          GROUP BY DEPT_CODE 
+          ORDER BY 평균급여 DESC)
+         WHERE ROWNUM <=5;
      
 -- 11. PROF
     SELECT EMP_ID, EMP_NAME, DEPT_TITLE, JOB_NAME, HIRE_DATE, 순위
@@ -227,7 +252,6 @@ FROM (SELECT DEPT_CODE, ROUND(AVG(SALARY))평균급여
                     DEPT_TITLE, 
                     JOB_NAME, 
                     HIRE_DATE, 
-                  --SALARY*(1+NVL(BONUS,0))*12
                     RANK()OVER(ORDER BY(SALARY*(1+NVL(BONUS,0))*12)DESC) 순위
             FROM EMPLOYEE E
             JOIN DEPARTMENT D ON (DEPT_CODE=DEPT_ID)
@@ -235,21 +259,27 @@ FROM (SELECT DEPT_CODE, ROUND(AVG(SALARY))평균급여
     WHERE  순위 <=5;            
         
 -- 12. 부서 별 급여 합계가 전체 급여 총 합의 20%보다 많은 부서의 부서 명, 부서 별 급여 합계 조회
-    SELECT  DEPT_CODE ,SUM(SALARY) AS "급여합"
+    SELECT  DEPT_TITLE ,SUM(SALARY) AS "급여합"
     FROM EMPLOYEE E,
          DEPARTMENT D
     WHERE 
         DEPT_CODE=DEPT_ID
         AND 
         SUM(SALARY) 
-   GROUP BY DEPT_CODE;
+   GROUP BY DEPT_TITLE
+   HAVING SUM(SALARY) > (SELECT SUM(SALARY)*0.2
+                          FROM EMPLOYEE);
     
 -- 12-1. JOIN과 HAVING 사용                
-    SELECT D.DEPT_TITLE, SUM(SALARY) AS "급여합"
+    SELECT D.DEPT_TITLE, SUM(E.SALARY) AS "급여합"
     FROM EMPLOYEE E,
          DEPARTMENT D
+    WHERE E.DEPT_CODE = D.DEPT_ID
+    GROUP BY DEPT_TITLE
     HAVING 
-         SUM(SALARY)*120 <= SUM(SALARY);
+         SUM(SALARY) >=(SELECT SUM(SALARY)*0.2
+                        FROM EMPLOYEE);
+         
 -- 12-1 PROF  그룹이 총합의 20% 넘느냐 
     SELECT DEPT_TITLE, SUM(SALARY)
     FROM EMPLOYEE

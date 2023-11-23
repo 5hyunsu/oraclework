@@ -108,10 +108,10 @@ JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
 --해결방법 1) 테이블 별칭 사용
 SELECT EMP_ID, EMP_NAME, E.JOB_CODE, JOB_NAME
 FROM EMPLOYEE E
-JOIN JOB J ON (EMPLOYEE.JOB_CODE=JOB.JOB_CODE); --이와같이 테이브 별칭 같이 써줘야한다.
+JOIN JOB J ON (E.JOB_CODE=J.JOB_CODE); --이와같이 테이브 별칭 같이 써줘야한다.
 
 SELECT EMP_ID, EMP_NAME, E.JOB_CODE, JOB_NAME
-FROM EMPLOYEE 
+FROM EMPLOYEE E
 JOIN JOB J ON (E.JOB_CODE=J.JOB_CODE);
 
 --해결방법 2) JOIN USING 구문을 사용하는 방법(두 컬럼명이 일치할 떄만 사용가능)
@@ -139,7 +139,7 @@ WHERE E.JOB_CODE =J.JOB_CODE
       JOB_NAME='대리';
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -->>ANSI 구문 
-SELECT EMP_ID, EMP_NAME, JOB_NAME, SALFROM EMPLOYEE
+SELECT EMP_ID, EMP_NAME, JOB_NAME, SALARY
 FROM EMPLOYEE
 JOIN JOB USING(JOB_CODE)
 WHERE JOB_NAME='대리'; --순서는 상관없다
@@ -236,10 +236,14 @@ LEFT OUTER JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
 
 -->>오라클 전용 구문 
 SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
-FROM EMPLOYEE, DAPARTMENT
-WHERE DEPT_CODE(+)= DEPT_ID; 
+FROM EMPLOYEE, DEPARTMENT
+WHERE DEPT_CODE(+)= DEPT_ID;  --이 경우 부서가 EMP_NAME이 NULL값으로 이름없이 부서명만 나오기도 한다.
 --기준이 아닌 테이블의 컬럼명 뒤에 (+)를 붙여준다. 
 --EMPLOYEE가 기준인데 그거 반대편인 DEPT_ID(DEPARTMENT)플러스표시
+SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
+FROM EMPLOYEE, DEPARTMENT
+WHERE DEPT_CODE= DEPT_ID(+); --이 경우 EMPLOYEE가 기준이 되서 EMP_NAME이 NULL값으로 나오지 않는다.
+
 
 --1) RIGHT[OUTER] JOIN : 두 테이블 중 오른쪽에 기술된 테이블이 기준으로 JOIN
 -->>ANSI 구문 
@@ -264,7 +268,10 @@ WHERE DEPT_CODE=DEPT_ID(+); --부서명 안뜨는것
 SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
 FROM EMPLOYEE
 FULL JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
-
+--DEPT_CODE=DEPT_ID 두개 자리를 뒤바뀌어도 값이 똑같이 나온다. 
+SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
+FROM EMPLOYEE
+FULL JOIN DEPARTMENT ON (DEPT_ID=DEPT_CODE);
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
     3.비등가 조인 (NON EQUAL JOIN)
@@ -339,16 +346,23 @@ FULL JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
 */
 -->>오라클 주문
     SELECT E.EMP_ID, E.EMP_NAME, D.DEPT_TITLE, J.JOB_NAME
-    FROM EMPLOYEE E, DEPARTMENT D, JOB J
+    FROM EMPLOYEE E, 
+        DEPARTMENT D,
+        JOB J
     WHERE DEPT_CODE=DEPT_ID
           AND
         E.JOB_CODE=J.JOB_CODE;
 
 -->>ANSI 구문
+    SELECT EMP_ID, EMP_NAME, DEPT_TITLE, JOB_NAME
+    FROM EMPLOYEE 
+    JOIN DEPARTMENT  ON(DEPT_CODE=DEPT_ID) --ON: 테이블 별칭 써줘야
+    JOIN JOB  USING(JOB_CODE);
+    
     SELECT E.EMP_ID, E.EMP_NAME, D.DEPT_TITLE, J.JOB_NAME
-    FROM EMPLOYEE
-    JOIN DEPARTMENYT ON(DEPT_CODE=DEPT_ID) --ON: 테이블 별칭 써줘야
-    JOIN JOB USING(JOB_CODE);
+    FROM EMPLOYEE E
+    JOIN DEPARTMENT D ON(DEPT_CODE=DEPT_ID) --ON: 테이블 별칭 써줘야
+    JOIN JOB J USING(JOB_CODE);
 
 --사원의 사번, 사원명, 부서명,지역명 조회 
 -->>오라클 주문
@@ -420,13 +434,12 @@ FULL JOIN DEPARTMENT ON (DEPT_CODE=DEPT_ID);
     AND
       D.LOCATION_ID = L.LOCAL_CODE
     AND
-      '
-      
+           
     AND
       E.JOB_CODE = J.JOB_CODE
     AND
       E.SALARY BETWEEN MIN_SAL AND MAX_SAL;
-
+*/
 -->>ANSI 구문
     SELECT EMP_ID, EMP_NAME, DEPT_TITLE, JOB_NAME, LOCAL_NAME, NATIONAL_NAME, SAL_LEVEL
     FROM EMPLOYEE

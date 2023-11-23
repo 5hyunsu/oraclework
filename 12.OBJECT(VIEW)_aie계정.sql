@@ -408,29 +408,3 @@ DELETE FROM VM_EMP_READ WHERE EMP_ID=200;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -112,6 +112,8 @@ SELECT EMP_NAME, EMAIL, SUBSTR(EMAIL, 1,INSTR(EMAIL,'@',1,1)-1)
 --@의 인댁스 번호를 ABC@ 니까 4-1=3으로 표현한다ㅏ. 
 FROM EMPLOYEE;
 
+SELECT EMP_NAME, EMAIL, SUBSTR(EMAIL,1, INSTR(EMAIL, '@',1,1)-1)
+FROM EMPLOYEE;
 ---------------------------------------------------------
 
 /*
@@ -632,6 +634,9 @@ SELECT NULLIF('1234','5678')FROM DUAL;
 SELECT EMP_NAME, DECODE(SUBSTR(EMP_NO,8,1),'1'OR'3','남자','2'OR '4','여자') 성별
 FROM EMPLOYEE;
 
+SELECT EMP_NAME, DECODE(SUBSTR(EMP_NO, 8, 1), '1','남자', '2','여자', '3','남자', '4','여자') 성별
+FROM EMPLOYEE;
+
 --직원의 급여를 직급별로 인상해서 조회
 --J5이면 급여의 20% 인상
 --J6이면 급여의 15% 인상
@@ -708,6 +713,9 @@ WHERE DEPT_CODE = 'D5';
 
 --전사원의 총급여액 조회 
 SELECT TO_CHAR(SUM(SALARY),'L999,999,999')"총 급여액"
+FROM EMPLOYEE;
+
+SELECT SUM(SALARY)
 FROM EMPLOYEE;
 
 ----------------------------------------------------------
