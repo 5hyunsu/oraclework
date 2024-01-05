@@ -69,5 +69,13 @@ CREATE user DDL IDENTIFIED BY DDL;
 GRANT RESOURCE, CONNECT TO DDL;
 ALTER USER DDL DEFAULT TABLESPACE users quota UNLIMITED on users;
 
+-- (3) mybatis 사용자 새로만들기 
+ALTER SESSION set "_oracle_script" = true; --씨 샵샵 없애주는 것 
+CREATE USER mybatis IDENTIFIED BY mybatis;
+GRANT RESOURCE, CONNECT TO mybatis;
+ALTER USER mybatis DEFAULT TABLESPACE users quota UNLIMITED on users;
+commit;
 
+SELECT * FROM ALL_USERS;
+commit;
 
